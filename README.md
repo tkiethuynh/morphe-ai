@@ -2,7 +2,7 @@
 
 AI-powered Android APK patching workspace. Multi-agent pipeline that automates: APK analysis → decompilation → target hunting → patch writing → build & deploy.
 
-Built with [Kiro CLI](https://kiro.dev), but the prompts, skills, and steering context are **model-agnostic** — adapt them to any AI coding assistant (Cursor, Copilot, Cline, Aider, Claude Code, etc.).
+Preconfigured for **[Antigravity CLI](https://antigravity.google)** (`agy`) and **[Kiro CLI](https://kiro.dev)**, with prompts, skills, and steering context that are **model-agnostic** — adapt them to any AI coding assistant (Antigravity, Cursor, Copilot, Cline, Aider, Claude Code, etc.).
 
 **Author:** [Paresh Maheshwari](https://github.com/Paresh-Maheshwari)
 **Repository:** [morphe-ai](https://github.com/Paresh-Maheshwari/morphe-ai)
@@ -72,10 +72,17 @@ EOF
 #    If you use a different name, update all references in .kiro/agents/, .kiro/prompts/, and AGENTS.md
 git clone <your-patches-repo> paresh-patches
 
-# 5. Setup CLI (downloads latest from GitHub)
+# 5. Setup CLI (downloads latest Morphe desktop CLI from GitHub)
 ./setup-cli.sh
 
-# 6. Start Kiro
+# 6. Start with your preferred AI CLI:
+# Using Antigravity CLI (recommended):
+agy
+# Or launch a specific agent directly:
+agy --agent morphe
+# (Inside agy chat, switch agents with `/agent <name>` or `@<name>`)
+
+# Using Kiro CLI:
 kiro chat
 ```
 
@@ -118,7 +125,7 @@ The `jadx-decompile` script runs decompilation on Kaggle's free servers (4 cores
 
 ### Usage
 ```bash
-.kiro/jadx-decompile "https://direct-download-url" analysis/<app>/
+scripts/jadx-decompile "https://direct-download-url" analysis/<app>/
 ```
 
 ## Workspace Structure
@@ -127,23 +134,23 @@ The `jadx-decompile` script runs decompilation on Kaggle's free servers (4 cores
 morphe/
 ├── .env.example            # Template for secrets
 ├── .gitignore              # Ignores secrets, binaries, large folders
-├── AGENTS.md               # Main orchestrator prompt
+├── AGENTS.md               # Main orchestrator rules (loaded by Antigravity / Kiro)
+├── GEMINI.md               # Symlink to AGENTS.md
 ├── LICENSE                 # Proprietary license
 ├── README.md               # This file
 ├── setup-cli.sh            # CLI download/build script
-└── .kiro/
-    ├── agents/             # 6 agent configs
+├── scripts/
+│   └── jadx-decompile      # Remote decompiler script (Kaggle runner)
+├── .agents/                # Antigravity CLI customization root
+│   ├── agents/             # 6 custom Markdown agents (morphe, apk-recon, etc.)
+│   ├── skills/             # 13 on-demand Antigravity skills
+│   ├── steering/           # 31 domain context & guide files
+│   └── scripts/            # Helper scripts & symlinks
+└── .kiro/                  # Kiro CLI configuration & agents
+    ├── agents/             # Kiro agent configs
     ├── prompts/            # Agent prompt files
-    ├── skills/             # 13 on-demand skills
-    ├── steering/           # 31 always-loaded context files
-    │   ├── core/           # Project overview (morphe agent)
-    │   ├── build/          # Build/CLI reference (patch-deployer)
-    │   ├── patching/       # Patch writing guides (patch-writer)
-    │   ├── bytecode/       # Smali/fingerprinting (patch-writer + target-hunter)
-    │   ├── patterns/       # Bypass patterns (target-hunter)
-    │   └── community/      # Community patch analysis (target-hunter)
-    ├── settings/           # LSP config
-    └── jadx-decompile      # Remote decompiler script
+    ├── skills/             # Kiro skills
+    └── steering/           # Steering files
 
 # Created locally after setup (gitignored):
 ├── .env                    # Your secrets
